@@ -50,13 +50,15 @@ void init(int* server_fd, int* new_socket, int* valread, struct sockaddr_in* add
         exit(EXIT_FAILURE); 
     } 
 
-    string response = "+Blain SFTP Service\0";
+    string response = "+Blain SFTP Service\n\0";
     cout << response; 
     send(*new_socket, response.data(), response.size(), 0); 
 }
 
 void directory(string inputCommand) {
-    
+    if(inputCommand.substr(0, 4) == "USER") {
+        
+    }
 }
 
 int main(int argc, char const *argv[]) 
