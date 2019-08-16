@@ -89,6 +89,6 @@ int main(int argc, char const *argv[])
 		// Receive response
 		valread = read(sock, buffer, 1024); 
 
-		cout << string(buffer);
+		cout << string(buffer) << endl;
 	}
 } 

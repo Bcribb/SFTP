@@ -13,6 +13,9 @@
 #define PORT 8080 
 using namespace std;
 
+CommandList cmds = CommandList();
+SeshGremlin session = SeshGremlin();
+
 void init(int* server_fd, int* new_socket, int* valread, struct sockaddr_in* address, int* opt, int* addrlen) {
     // Creating socket file descriptor, socket(domain(IPv4 or IPv6), type(TCP or UDP), protocol value)
     if ((*server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) { 
@@ -50,38 +53,68 @@ void init(int* server_fd, int* new_socket, int* valread, struct sockaddr_in* add
         exit(EXIT_FAILURE); 
     } 
 
-    string response = "+Blain SFTP Service\n\0";
-    cout << response; 
+    string response = "+Blain SFTP Service\0";
+    cout << response << endl; 
     send(*new_socket, response.data(), response.size(), 0); 
 }
 
-void directory(string inputCommand) {
+// Directs to operations for different commands
+void directory(string inputCommand, string& response) {
     string commandString = inputCommand.substr(0, 4);
-    if(commandString == "USER") {
-        cout << "USER" << endl;
-        cout << inputCommand.substr(5) << endl;
-    } else if(commandString == CommandList.username) {
-        cout << "ACCT" << endl;
-    } else if(commandString == CommandList.password) {
-        cout << "PASS" << endl;
-    } else if(commandString == CommandList.filetype) {
+    
+    response.clear();
+
+    // Username
+    if(commandString == cmds.username) {
+        UsernameCommand command = UsernameCommand(commandString, inputCommand.substr(5));        
+        command.getResponse(session, response);
+
+    // Account
+    } else if(commandString == cmds.username) {
+        AccountCommand command = AccountCommand(commandString, inputCommand.substr(5));
+        command.getResponse(session, response);
+
+    // Password
+    } else if(commandString == cmds.password) {
+        PasswordCommand command = PasswordCommand(commandString, inputCommand.substr(5));
+        command.getResponse(session, response);
+
+    // Type
+    } else if(commandString == cmds.filetype) {
         cout << "TYPE" << endl;
-    } else if(commandString == CommandList.listDirectory) {
+
+    // List
+    } else if(commandString == cmds.listDirectory) {
         cout << "LIST" << endl;
-    } else if(commandString == CommandList.changeDir) {
+    
+    // Change directory
+    } else if(commandString == cmds.changeDir) {
         cout << "CDIR" << endl;
-    } else if(commandString == CommandList.deleteFile) {
+    
+    // Delete file
+    } else if(commandString == cmds.deleteFile) {
         cout << "Kill" << endl;
-    } else if(commandString == CommandList.rename) {
+    
+    // Rename file
+    } else if(commandString == cmds.rename) {
         cout << "NAME" << endl;
-    } else if(commandString == CommandList.done) {
+    
+    // Done command
+    } else if(commandString == cmds.done) {
         cout << "DONE" << endl;
-    } else if(commandString == CommandList.requestSend) {
+    
+    // Request file
+    } else if(commandString == cmds.requestSend) {
         cout << "RETR" << endl;
-    } else if(commandString == CommandList.storeFile) {
+    
+    // Request store
+    } else if(commandString == cmds.storeFile) {
         cout << "STOR" << endl;
+    
+    // They entered something wrong
     } else {
-        cout << "invalid command" << endl;
+        response = "Invalid command";
+        cout << "Invalid command" << endl;
     }
 }
 
@@ -102,7 +135,7 @@ int main(int argc, char const *argv[])
         // Read in the command, print it
         valread = read(new_socket , buffer, 1024);
         cout << "Command was : " << buffer << endl;
-        directory(string(buffer));
+        directory(string(buffer), response);
         
         memset(buffer, 0, sizeof(buffer));
 
