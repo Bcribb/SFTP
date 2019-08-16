@@ -18,8 +18,6 @@ Command::Command(string command) {
     this->command = command;
 }
 
-
-
 UsernameCommand::UsernameCommand(string command, string userID) : Command(command) {
     this->userID = userID;
 }

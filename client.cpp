@@ -85,7 +85,6 @@ int main(int argc, char const *argv[])
 		}
 
 		send(sock, command.data(), command.size(), 0); 
-		cout << "Command sent\n";
 
 		// Receive response
 		valread = read(sock, buffer, 1024); 

@@ -56,8 +56,32 @@ void init(int* server_fd, int* new_socket, int* valread, struct sockaddr_in* add
 }
 
 void directory(string inputCommand) {
-    if(inputCommand.substr(0, 4) == "USER") {
-        
+    string commandString = inputCommand.substr(0, 4);
+    if(commandString == "USER") {
+        cout << "USER" << endl;
+        cout << inputCommand.substr(5) << endl;
+    } else if(commandString == CommandList.username) {
+        cout << "ACCT" << endl;
+    } else if(commandString == CommandList.password) {
+        cout << "PASS" << endl;
+    } else if(commandString == CommandList.filetype) {
+        cout << "TYPE" << endl;
+    } else if(commandString == CommandList.listDirectory) {
+        cout << "LIST" << endl;
+    } else if(commandString == CommandList.changeDir) {
+        cout << "CDIR" << endl;
+    } else if(commandString == CommandList.deleteFile) {
+        cout << "Kill" << endl;
+    } else if(commandString == CommandList.rename) {
+        cout << "NAME" << endl;
+    } else if(commandString == CommandList.done) {
+        cout << "DONE" << endl;
+    } else if(commandString == CommandList.requestSend) {
+        cout << "RETR" << endl;
+    } else if(commandString == CommandList.storeFile) {
+        cout << "STOR" << endl;
+    } else {
+        cout << "invalid command" << endl;
     }
 }
 
@@ -78,6 +102,7 @@ int main(int argc, char const *argv[])
         // Read in the command, print it
         valread = read(new_socket , buffer, 1024);
         cout << "Command was : " << buffer << endl;
+        directory(string(buffer));
         
         memset(buffer, 0, sizeof(buffer));
 
