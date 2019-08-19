@@ -2,6 +2,17 @@
 
 using namespace std;
 
+
+/*-------Helpers---------*/
+bool singleArg(string input) {
+    if(input.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_") != std::string::npos) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/*-------CommandList---------*/
 const string CommandList::username = "USER";
 const string CommandList::account = "ACCT";
 const string CommandList::password = "PASS";
@@ -14,18 +25,26 @@ const string CommandList::done = "DONE";
 const string CommandList::requestSend = "RETR";
 const string CommandList::storeFile = "STOR";
 
-/*-------Helpers---------*/
-bool singleArg(string input) {
-    if(input.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_") != std::string::npos) {
+bool CommandList::checkUsername(string input) {
+    if(input[4] != ' ') {
+        cout << "INVALID ENTRY: Missing space" << endl;
         return false;
-    } else {
-        return true;
     }
+    
+    string username = input.substr(5);
+    cout << username << endl;
+    if(!singleArg(username)) {
+        cout << "INVALID ENTRY: Invalid user-id" << endl;
+        return false;
+    }
+
+    return true;
 }
 
 /*-------SeshGremlin---------*/
 SeshGremlin::SeshGremlin() {
     hasAccess = false;
+    directory = "./files/";
     return;
 }
 
@@ -54,10 +73,8 @@ void UsernameCommand::getResponse(SeshGremlin& session, string& response) {
     session.username = userID;
     if(session.checkCredentials() == loggedIn) {
         response = "!" + userID + " logged in\0";
-    } else if(singleArg(userID)) {
-        response = "+User-id valid, send account and password\0";
     } else {
-        response = "-Invalid user-id, try again\0";
+        response = "+User-id valid, send account and password\0";
     }
 }
 
@@ -128,6 +145,31 @@ void TypeCommand::changeType(SeshGremlin& session, string& response) {
     }
 }
 
+/*-------ListCommand---------*/
+ListCommand::ListCommand(string command, bool verbose, string path) : Command(command) {
+    this->verbose = verbose;
+    this->path = path;
+    return;
+}
+
+void ListCommand::listDirectory(SeshGremlin& session, string& response) {
+    struct dirent *entry;
+    string truePath = session.directory + path;
+    DIR *directory = opendir(truePath.c_str());
+
+    if(directory == NULL) {
+        cout << "Failed to open directory" << endl;
+        response = "-Directory doesn't exist";
+        return;
+    }
+
+    response = "+" + session.directory + path + "\n";
+    while ((entry = readdir(directory)) != NULL) {
+        response = response + entry->d_name + "\n";
+    }
+    
+    closedir(directory);
+}
 
 
 /*-----------COUT OVERRIDES FOR CLASSES------------*/

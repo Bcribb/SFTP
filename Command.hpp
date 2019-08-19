@@ -1,5 +1,7 @@
 #include <string>
 #include <stdlib.h>
+#include <dirent.h>
+#include <iostream>
 
 enum response {loggedIn, success, error};
 enum filetype {ascii, bin, con};
@@ -7,6 +9,8 @@ enum filetype {ascii, bin, con};
 using namespace std;
 
 /*-------CommandList---------*/
+/*  Stores definitions of different commands
+    and checks validity of inputs */
 class CommandList {
     public:
         static const string username;
@@ -20,6 +24,8 @@ class CommandList {
         static const string done;
         static const string requestSend;
         static const string storeFile;
+
+        bool checkUsername(string input);
 };
 
 /*-------SeshGremlin---------*/
@@ -30,6 +36,7 @@ class SeshGremlin {
         string password;
 
         filetype type;
+        string directory;
 
         bool hasAccess;
 
@@ -63,7 +70,7 @@ class AccountCommand : public Command {
     public:
         string account;
 
-        AccountCommand(string Command, string account);
+        AccountCommand(string command, string account);
 
         response validAccount();
         void getResponse(SeshGremlin& session, string& reponse);
@@ -74,7 +81,7 @@ class PasswordCommand : public Command {
     public:
         string password;
 
-        PasswordCommand(string Command, string password);
+        PasswordCommand(string command, string password);
 
         void getResponse(SeshGremlin& session, string& response);
 };
@@ -84,7 +91,18 @@ class TypeCommand : public Command {
     public:
         string type;
 
-        TypeCommand(string Command, string type);
+        TypeCommand(string command, string type);
 
         void changeType(SeshGremlin& session, string& response);
+};
+
+/*-------TypeCommand---------*/
+class ListCommand : public Command {
+    public:
+        bool verbose;
+        string path;
+
+        ListCommand(string command, bool verbose, string path);
+
+        void listDirectory(SeshGremlin& session, string& response);
 };

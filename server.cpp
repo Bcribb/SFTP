@@ -66,28 +66,45 @@ void directory(string inputCommand, string& response) {
 
     // Username
     if(commandString == cmds.username) {
-        UsernameCommand command = UsernameCommand(commandString, inputCommand.substr(5));        
-        command.getResponse(session, response);
+        if(cmds.checkUsername(inputCommand)) {
+            string username = inputCommand.substr(5);
+            UsernameCommand command = UsernameCommand(commandString, username); 
+            command.getResponse(session, response);
+        } else {
+            response = "-Invalid user-id, try again\0";
+        }
 
     // Account
     } else if(commandString == cmds.account) {
-        AccountCommand command = AccountCommand(commandString, inputCommand.substr(5));
+        string account = inputCommand.substr(5);
+        AccountCommand command = AccountCommand(commandString, account);
         command.getResponse(session, response);
 
     // Password
     } else if(commandString == cmds.password) {
-        PasswordCommand command = PasswordCommand(commandString, inputCommand.substr(5));
+        string password = inputCommand.substr(5);
+        PasswordCommand command = PasswordCommand(commandString, password);
         command.getResponse(session, response);
 
     // Type
     } else if(commandString == cmds.filetype) {
-        TypeCommand command = TypeCommand(commandString, inputCommand.substr(5));
+        string filetype = inputCommand.substr(5);
+        TypeCommand command = TypeCommand(commandString, filetype);
         command.changeType(session, response);
 
     // List
     } else if(commandString == cmds.listDirectory) {
-        cout << "LIST" << endl;
-    
+        bool verbose = false;
+        if(inputCommand.substr(5, 1) == "V") verbose = true;
+        string path;
+        if(inputCommand.length() > 7) {
+            path = inputCommand.substr(7);
+        } else {
+            path = "";
+        }
+        ListCommand command = ListCommand(commandString, verbose, path);
+        command.listDirectory(session, response);
+
     // Change directory
     } else if(commandString == cmds.changeDir) {
         cout << "CDIR" << endl;
