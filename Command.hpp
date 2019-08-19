@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 enum response {loggedIn, success, error};
+enum filetype {ascii, bin, con};
 
 using namespace std;
 
@@ -27,6 +28,9 @@ class SeshGremlin {
         string username;
         string account;
         string password;
+
+        filetype type;
+
         bool hasAccess;
 
         SeshGremlin();
@@ -73,4 +77,14 @@ class PasswordCommand : public Command {
         PasswordCommand(string Command, string password);
 
         void getResponse(SeshGremlin& session, string& response);
+};
+
+/*-------TypeCommand---------*/
+class TypeCommand : public Command {
+    public:
+        string type;
+
+        TypeCommand(string Command, string type);
+
+        void changeType(SeshGremlin& session, string& response);
 };

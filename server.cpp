@@ -70,7 +70,7 @@ void directory(string inputCommand, string& response) {
         command.getResponse(session, response);
 
     // Account
-    } else if(commandString == cmds.username) {
+    } else if(commandString == cmds.account) {
         AccountCommand command = AccountCommand(commandString, inputCommand.substr(5));
         command.getResponse(session, response);
 
@@ -81,7 +81,8 @@ void directory(string inputCommand, string& response) {
 
     // Type
     } else if(commandString == cmds.filetype) {
-        cout << "TYPE" << endl;
+        TypeCommand command = TypeCommand(commandString, inputCommand.substr(5));
+        command.changeType(session, response);
 
     // List
     } else if(commandString == cmds.listDirectory) {
@@ -135,6 +136,7 @@ int main(int argc, char const *argv[])
         // Read in the command, print it
         valread = read(new_socket , buffer, 1024);
         cout << "Command was : " << buffer << endl;
+
         directory(string(buffer), response);
         
         memset(buffer, 0, sizeof(buffer));

@@ -53,11 +53,11 @@ UsernameCommand::UsernameCommand(string command, string userID) : Command(comman
 void UsernameCommand::getResponse(SeshGremlin& session, string& response) {
     session.username = userID;
     if(session.checkCredentials() == loggedIn) {
-        response = "!" + userID + " logged in";
+        response = "!" + userID + " logged in\0";
     } else if(singleArg(userID)) {
-        response = "+User-id valid, send account and password";
+        response = "+User-id valid, send account and password\0";
     } else {
-        response = "-Invalid user-id, try again";
+        response = "-Invalid user-id, try again\0";
     }
 }
 
@@ -77,11 +77,11 @@ response AccountCommand::validAccount() {
 void AccountCommand::getResponse(SeshGremlin& session, string& response) {
     session.account = account;
     if(session.checkCredentials() == loggedIn) {
-        response = "!Account valid, logged-in";
+        response = "!Account valid, logged-in\0";
     } else if(validAccount()) {
-        response = "+User-id valid, send account and password";
+        response = "+User-id valid, send account and password\0";
     } else {
-        response = "-Invalid account, try again";
+        response = "-Invalid account, try again\0";
     }
 }
 
@@ -93,11 +93,38 @@ PasswordCommand::PasswordCommand(string command, string password) : Command(comm
 void PasswordCommand::getResponse(SeshGremlin& session, string& response) {
     session.password = password;
     if(session.checkCredentials() == loggedIn) {
-        response = "!Logged-in";
+        response = "!Logged-in\0";
     } else if(singleArg(password)) {
-        response = "+Send account";
+        response = "+Send account\0";
     } else {
-        response = "-Wrong password, try again";
+        response = "-Wrong password, try again\0";
+    }
+}
+
+/*-------TypeCommand---------*/
+TypeCommand::TypeCommand(string command, string type) : Command(command) {
+    this->type = type;
+}
+
+void TypeCommand::changeType(SeshGremlin& session, string& response) {
+    if(session.checkCredentials() != loggedIn) {
+        response = "-Please log in first";
+    } else {
+        string newType;
+        if(type == "A") {
+            newType = "Ascii";
+            session.type = ascii;
+        } else if(type == "B") {
+            newType = "Binary";
+            session.type = bin;
+        } else if(type == "C") {
+            newType = "Continuous";
+            session.type = con;
+        } else {
+            response = "-Type not valid";
+            return;
+        }
+        response = "+Using " + newType + " mode";
     }
 }
 

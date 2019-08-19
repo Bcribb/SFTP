@@ -88,6 +88,7 @@ int main(int argc, char const *argv[])
 
 		// Receive response
 		valread = read(sock, buffer, 1024); 
+		buffer[valread] = '\0';
 
 		cout << string(buffer) << endl;
 	}
