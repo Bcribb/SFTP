@@ -7,7 +7,7 @@ const string CommandList::password = "PASS";
 const string CommandList::filetype = "TYPE";
 const string CommandList::listDirectory = "LIST";
 const string CommandList::changeDir = "CDIR";
-const string CommandList::deleteFile = "Kill";
+const string CommandList::deleteFile = "KILL";
 const string CommandList::rename = "NAME";
 const string CommandList::done = "DONE";
 const string CommandList::requestSend = "RETR";
@@ -94,6 +94,20 @@ bool CommandList::checkList(string input) {
 }
 
 bool CommandList::checkChange(string input) {
+    if(input[4] != ' ') {
+        cout << "INVALID ENTRY: Missing space" << endl;
+        return false;
+    } 
+
+    if(!singleArg(input.substr(5))) {
+        cout << "INVALID ENTRY: Invalid format" << endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool CommandList::checkDelete(string input) {
     if(input[4] != ' ') {
         cout << "INVALID ENTRY: Missing space" << endl;
         return false;

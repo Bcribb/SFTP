@@ -133,13 +133,18 @@ void directory(string inputCommand, string& response) {
             ChangeCommand command = ChangeCommand(commandString, path);
             command.changeDir(session, response);
         } else {
-            cout << "FUCK" << endl;
             response = "-Can't connect to directory because: Invalid entry";
         }
     
     // Delete file
     } else if(commandString == cmds.deleteFile) {
-        cout << "Kill" << endl;
+        if(cmds.checkDelete(inputCommand)) {
+            string filename = inputCommand.substr(5);
+            DeleteCommand command = DeleteCommand(commandString, filename);
+            command.deleteFile(session, response);
+        } else {
+            response = "Not deleted because: Invalid entry";
+        }
     
     // Rename file
     } else if(commandString == cmds.rename) {

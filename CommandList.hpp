@@ -27,4 +27,5 @@ class CommandList {
         bool checkFiletype(string input);
         bool checkList(string input);
         bool checkChange(string input);
+        bool checkDelete(string input);
 };

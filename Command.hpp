@@ -1,5 +1,6 @@
 #include <string>
 #include <stdlib.h>
+#include <stdio.h>
 #include <dirent.h>
 #include <iostream>
 
@@ -99,4 +100,14 @@ class ChangeCommand : public Command {
         ChangeCommand(string command, string path);
 
         void changeDir(SeshGremlin& session, string& response);
+};
+
+/*-------DeleteCommand---------*/
+class DeleteCommand : public Command {
+    public:
+        string filename;
+
+        DeleteCommand(string command, string filename);
+
+        void deleteFile(SeshGremlin& session, string& response);
 };

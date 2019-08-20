@@ -182,6 +182,28 @@ void ChangeCommand::changeDir(SeshGremlin& session, string& resp) {
     resp = "!Changed working dir to " + session.directory;  
 }
 
+/*-------DeleteCommand---------*/
+DeleteCommand::DeleteCommand(string command, string filename) : Command(command) {
+    this->filename = filename;
+    return;
+}
+
+void DeleteCommand::deleteFile(SeshGremlin& session, string& resp) {
+    if(session.directory[session.directory.length() - 1] != '/') {
+        session.directory = session.directory + "/";
+    }
+
+    if(fileExists(session.directory + filename)) {
+        if((remove((session.directory + filename).c_str()) != 0)) {
+            resp = "-Not deleted because: Server failed to delete";
+        } else {
+            resp = "+" + session.directory + filename + " deleted";
+        }
+    } else {
+        resp = "-Not deleted because: File doesn't exist";
+    }
+}
+
 
 /*-----------COUT OVERRIDES FOR CLASSES------------*/
 
@@ -198,5 +220,3 @@ std::ostream& operator<< ( std::ostream& os, const UsernameCommand& inputCommand
 
    return os;
 }
-
-
