@@ -3,32 +3,12 @@
 #include <dirent.h>
 #include <iostream>
 
+#include "helpers.hpp"
+
 enum response {loggedIn, success, error};
 enum filetype {ascii, bin, con};
 
 using namespace std;
-
-/*-------CommandList---------*/
-/*  Stores definitions of different commands
-    and checks validity of inputs */
-class CommandList {
-    public:
-        static const string username;
-        static const string account;
-        static const string password;
-        static const string filetype;
-        static const string listDirectory;
-        static const string changeDir;
-        static const string deleteFile;
-        static const string rename;
-        static const string done;
-        static const string requestSend;
-        static const string storeFile;
-
-        bool checkUsername(string input);
-        bool checkAccount(string input);
-        bool checkPassword(string input);
-};
 
 /*-------SeshGremlin---------*/
 class SeshGremlin {
@@ -93,9 +73,9 @@ class PasswordCommand : public Command {
 /*-------TypeCommand---------*/
 class TypeCommand : public Command {
     public:
-        string type;
+        char type;
 
-        TypeCommand(string command, string type);
+        TypeCommand(string command, char type);
 
         void changeType(SeshGremlin& session, string& response);
 };

@@ -1,10 +1,10 @@
 CC = g++
 CFLAGS = -g -Wfatal-errors -lstdc++ -std=c++11
 
-SSOURCES = server.cpp Command.cpp 
+SSOURCES = server.cpp Command.cpp CommandList.cpp helpers.cpp
 CSOURCES = client.cpp
 
-SOBJECTS = server.o Command.o
+SOBJECTS = ${SSOURCES:.cpp=.o}
 COBJECTS = ${CSOURCES:.cpp=.o}
 
 SERVER = server

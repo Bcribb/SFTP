@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "Command.hpp"
+#include "CommandList.hpp"
 
 #define PORT 8080 
 using namespace std;
@@ -71,7 +72,7 @@ void directory(string inputCommand, string& response) {
             UsernameCommand command = UsernameCommand(commandString, username); 
             command.getResponse(session, response);
         } else {
-            response = "-Invalid user-id, try again\0";
+            response = "-Invalid user-id, try again";
         }
 
     // Account
@@ -96,9 +97,13 @@ void directory(string inputCommand, string& response) {
 
     // Type
     } else if(commandString == cmds.filetype) {
-        string filetype = inputCommand.substr(5);
-        TypeCommand command = TypeCommand(commandString, filetype);
-        command.changeType(session, response);
+        if(cmds.checkFiletype(inputCommand)) {
+            char filetype = inputCommand[5];
+            TypeCommand command = TypeCommand(commandString, filetype);
+            command.changeType(session, response);
+        } else {
+            response = "-Type not valid";
+        }  
 
     // List
     } else if(commandString == cmds.listDirectory) {
