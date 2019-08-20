@@ -72,3 +72,23 @@ bool CommandList::checkFiletype(string input) {
 
     return true;
 }
+
+bool CommandList::checkList(string input) {
+    if(input[4] != ' ') {
+        cout << "INVALID ENTRY: Missing space" << endl;
+        return false;
+    }
+    
+    char type = input[5];
+    if(!((type == 'F') || (type == 'V'))) {
+        cout << "INVALID ENTRY: Invalid format" << endl;
+        return false;
+    }
+
+    if(input.length() > 6 && (input[6] != ' ')) {
+        cout << "INVALID ENTRY: Missing space" << endl;
+        return false;
+    }
+
+    return true;
+}

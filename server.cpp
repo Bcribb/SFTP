@@ -95,6 +95,10 @@ void directory(string inputCommand, string& response) {
             response = "-Wrong password, try again";
         }
 
+    // Check at this point whether the user has access
+    } else if (!(session.checkPassword() == loggedIn)) {
+        response = "-Please log in first";  
+
     // Type
     } else if(commandString == cmds.filetype) {
         if(cmds.checkFiletype(inputCommand)) {
@@ -107,16 +111,21 @@ void directory(string inputCommand, string& response) {
 
     // List
     } else if(commandString == cmds.listDirectory) {
-        bool verbose = false;
-        if(inputCommand.substr(5, 1) == "V") verbose = true;
-        string path;
-        if(inputCommand.length() > 7) {
-            path = inputCommand.substr(7);
+        if(cmds.checkList(inputCommand)) {
+            bool verbose = false;
+            if(inputCommand.substr(5, 1) == "V") verbose = true;
+            string path;
+            if(inputCommand.length() > 7) {
+                path = inputCommand.substr(7);
+            } else {
+                path = "";
+            }
+            ListCommand command = ListCommand(commandString, verbose, path);
+            command.listDirectory(session, response);
         } else {
-            path = "";
+            response = "-Invalid entry";
         }
-        ListCommand command = ListCommand(commandString, verbose, path);
-        command.listDirectory(session, response);
+        
 
     // Change directory
     } else if(commandString == cmds.changeDir) {

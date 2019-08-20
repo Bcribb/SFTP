@@ -117,22 +117,18 @@ TypeCommand::TypeCommand(string command, char type) : Command(command) {
 }
 
 void TypeCommand::changeType(SeshGremlin& session, string& response) {
-    if(!session.hasAccess) {
-        response = "-Please log in first";
-    } else {
-        string newType;
-        if(type == 'A') {
-            newType = "Ascii";
-            session.type = ascii;
-        } else if(type == 'B') {
-            newType = "Binary";
-            session.type = bin;
-        } else if(type == 'C') {
-            newType = "Continuous";
-            session.type = con;
-        }
-        response = "+Using " + newType + " mode";
+    string newType;
+    if(type == 'A') {
+        newType = "Ascii";
+        session.type = ascii;
+    } else if(type == 'B') {
+        newType = "Binary";
+        session.type = bin;
+    } else if(type == 'C') {
+        newType = "Continuous";
+        session.type = con;
     }
+    response = "+Using " + newType + " mode";
 }
 
 /*-------ListCommand---------*/
@@ -153,7 +149,7 @@ void ListCommand::listDirectory(SeshGremlin& session, string& response) {
         return;
     }
 
-    response = "+" + session.directory + path + "\n";
+    response = "\n+" + session.directory + path + "\n";
     while ((entry = readdir(directory)) != NULL) {
         response = response + entry->d_name + "\n";
     }
