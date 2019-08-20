@@ -26,4 +26,5 @@ class CommandList {
         bool checkPassword(string input);
         bool checkFiletype(string input);
         bool checkList(string input);
+        bool checkChange(string input);
 };

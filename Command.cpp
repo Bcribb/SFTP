@@ -5,7 +5,7 @@ using namespace std;
 /*-------SeshGremlin---------*/
 SeshGremlin::SeshGremlin() {
     hasAccess = false;
-    directory = "./files/";
+    directory = "./files";
     return;
 }
 
@@ -132,6 +132,7 @@ void TypeCommand::changeType(SeshGremlin& session, string& response) {
 }
 
 /*-------ListCommand---------*/
+// TODO: Add verbosity
 ListCommand::ListCommand(string command, bool verbose, string path) : Command(command) {
     this->verbose = verbose;
     this->path = path;
@@ -155,6 +156,30 @@ void ListCommand::listDirectory(SeshGremlin& session, string& response) {
     }
     
     closedir(directory);
+}
+
+/*-------ChangeCommand---------*/
+// TODO: make folder movement less janky
+ChangeCommand::ChangeCommand(string command, string path) : Command(command) {
+    this->path = path;
+    return;
+}
+
+void ChangeCommand::changeDir(SeshGremlin& session, string& resp) {
+    if(session.directory[session.directory.length() - 1] != '/') {
+        session.directory = session.directory + "/";
+    }
+    DIR *directory = opendir((session.directory + path).c_str());
+
+    if(directory == NULL) {
+        cout << "Failed to open directory: " << session.directory + path << endl;
+        resp = "-Can't connect to directory because: Doesn't exist";
+        closedir(directory);
+        return;
+    }
+
+    session.directory = session.directory + path;
+    resp = "!Changed working dir to " + session.directory;  
 }
 
 

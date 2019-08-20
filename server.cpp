@@ -126,10 +126,16 @@ void directory(string inputCommand, string& response) {
             response = "-Invalid entry";
         }
         
-
     // Change directory
     } else if(commandString == cmds.changeDir) {
-        cout << "CDIR" << endl;
+        if(cmds.checkChange(inputCommand)) {
+            string path = inputCommand.substr(5);
+            ChangeCommand command = ChangeCommand(commandString, path);
+            command.changeDir(session, response);
+        } else {
+            cout << "FUCK" << endl;
+            response = "-Can't connect to directory because: Invalid entry";
+        }
     
     // Delete file
     } else if(commandString == cmds.deleteFile) {

@@ -92,3 +92,17 @@ bool CommandList::checkList(string input) {
 
     return true;
 }
+
+bool CommandList::checkChange(string input) {
+    if(input[4] != ' ') {
+        cout << "INVALID ENTRY: Missing space" << endl;
+        return false;
+    } 
+
+    if(!singleArg(input.substr(5))) {
+        cout << "INVALID ENTRY: Invalid format" << endl;
+        return false;
+    }
+
+    return true;
+}

@@ -90,3 +90,13 @@ class ListCommand : public Command {
 
         void listDirectory(SeshGremlin& session, string& response);
 };
+
+/*-------ChangeCommand---------*/
+class ChangeCommand : public Command {
+    public:
+        string path;
+
+        ChangeCommand(string command, string path);
+
+        void changeDir(SeshGremlin& session, string& response);
+};
