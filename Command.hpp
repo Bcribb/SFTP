@@ -26,6 +26,8 @@ class CommandList {
         static const string storeFile;
 
         bool checkUsername(string input);
+        bool checkAccount(string input);
+        bool checkPassword(string input);
 };
 
 /*-------SeshGremlin---------*/
@@ -41,7 +43,9 @@ class SeshGremlin {
         bool hasAccess;
 
         SeshGremlin();
-        response checkCredentials();
+        response checkUsername();
+        response checkAccount();
+        response checkPassword();
 };
 
 /*-------Command---------*/

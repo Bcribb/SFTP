@@ -32,9 +32,38 @@ bool CommandList::checkUsername(string input) {
     }
     
     string username = input.substr(5);
-    cout << username << endl;
     if(!singleArg(username)) {
-        cout << "INVALID ENTRY: Invalid user-id" << endl;
+        cout << "INVALID ENTRY: Invalid user-id format" << endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool CommandList::checkAccount(string input) {
+    if(input[4] != ' ') {
+        cout << "INVALID ENTRY: Missing space" << endl;
+        return false;
+    }
+    
+    string account = input.substr(5);
+    if(!singleArg(account)) {
+        cout << "INVALID ENTRY: Invalid account format" << endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool CommandList::checkPassword(string input) {
+    if(input[4] != ' ') {
+        cout << "INVALID ENTRY: Missing space" << endl;
+        return false;
+    }
+    
+    string password = input.substr(5);
+    if(!singleArg(password)) {
+        cout << "INVALID ENTRY: Invalid password format" << endl;
         return false;
     }
 
@@ -48,14 +77,49 @@ SeshGremlin::SeshGremlin() {
     return;
 }
 
+response SeshGremlin::checkUsername() {
+    if(username == "root") {
+        hasAccess = true;
+        return loggedIn;
+    } else if(singleArg(username)) {
+        return success;
+    } else {
+        return error;
+    }
+}
+
 // TODO: Implement some different creds
-response SeshGremlin::checkCredentials() {
-    if(username == "root" || (account == "Blain" && password == "Cribb")) {
+response SeshGremlin::checkAccount() {
+    if(checkUsername() == loggedIn) {
+        hasAccess = true;
+        return loggedIn;
+    } else if(account == "Blain") {
+        if(password == "Cribb") {
+            hasAccess = true;
+            return loggedIn;
+        } else {
+            hasAccess = false;
+            return success;
+        }
+    } else {
+        hasAccess = false;
+        return error;
+    }
+}
+
+response SeshGremlin::checkPassword() {
+    if(checkUsername() == loggedIn) {
+        hasAccess = true;
+        return loggedIn;
+    } else if(account.empty() && singleArg(password)) {
+        hasAccess = false;
+        return success;
+    } else if(account == "Blain" && password == "Cribb") {
         hasAccess = true;
         return loggedIn;
     } else {
         hasAccess = false;
-        return success;
+        return error;
     }
 }
 
@@ -69,12 +133,15 @@ UsernameCommand::UsernameCommand(string command, string userID) : Command(comman
     this->userID = userID;
 }
 
-void UsernameCommand::getResponse(SeshGremlin& session, string& response) {
+void UsernameCommand::getResponse(SeshGremlin& session, string& resp) {
     session.username = userID;
-    if(session.checkCredentials() == loggedIn) {
-        response = "!" + userID + " logged in\0";
+    response respon = session.checkUsername(); 
+    if(respon == loggedIn) {
+        resp = "!" + userID + " logged in";
+    } else if(respon == success) {
+        resp = "+User-id valid, send account and password";
     } else {
-        response = "+User-id valid, send account and password\0";
+        resp = "-Invalid user-id, try again";
     }
 }
 
@@ -83,22 +150,15 @@ AccountCommand::AccountCommand(string command, string account) : Command(command
     this->account = account;
 }
 
-response AccountCommand::validAccount() {
-    if(account == "Blain") {
-        return success;
-    } else {
-        return error;
-    }
-}
-
-void AccountCommand::getResponse(SeshGremlin& session, string& response) {
+void AccountCommand::getResponse(SeshGremlin& session, string& resp) {
     session.account = account;
-    if(session.checkCredentials() == loggedIn) {
-        response = "!Account valid, logged-in\0";
-    } else if(validAccount()) {
-        response = "+User-id valid, send account and password\0";
+    response check = session.checkAccount();
+    if(check == loggedIn) {
+        resp = "!Account valid, logged-in";
+    } else if(check == success) {
+        resp = "+Account valid, send password";
     } else {
-        response = "-Invalid account, try again\0";
+        resp = "-Invalid account, try again";
     }
 }
 
@@ -107,14 +167,15 @@ PasswordCommand::PasswordCommand(string command, string password) : Command(comm
     this->password = password;
 }
 
-void PasswordCommand::getResponse(SeshGremlin& session, string& response) {
+void PasswordCommand::getResponse(SeshGremlin& session, string& resp) {
     session.password = password;
-    if(session.checkCredentials() == loggedIn) {
-        response = "!Logged-in\0";
-    } else if(singleArg(password)) {
-        response = "+Send account\0";
+    response check = session.checkPassword();
+    if(check == loggedIn) {
+        resp = "!Logged-in";
+    } else if(check == success) {
+        resp = "+Send account";
     } else {
-        response = "-Wrong password, try again\0";
+        resp = "-Wrong password, try again";
     }
 }
 
@@ -124,7 +185,7 @@ TypeCommand::TypeCommand(string command, string type) : Command(command) {
 }
 
 void TypeCommand::changeType(SeshGremlin& session, string& response) {
-    if(session.checkCredentials() != loggedIn) {
+    if(!session.hasAccess) {
         response = "-Please log in first";
     } else {
         string newType;

@@ -76,15 +76,23 @@ void directory(string inputCommand, string& response) {
 
     // Account
     } else if(commandString == cmds.account) {
-        string account = inputCommand.substr(5);
-        AccountCommand command = AccountCommand(commandString, account);
-        command.getResponse(session, response);
+        if(cmds.checkAccount(inputCommand)) {
+            string account = inputCommand.substr(5);
+            AccountCommand command = AccountCommand(commandString, account);
+            command.getResponse(session, response);
+        } else {
+            response = "-Invalid account, try again";
+        }
 
     // Password
     } else if(commandString == cmds.password) {
-        string password = inputCommand.substr(5);
-        PasswordCommand command = PasswordCommand(commandString, password);
-        command.getResponse(session, response);
+        if(cmds.checkPassword(inputCommand)) {
+            string password = inputCommand.substr(5);
+            PasswordCommand command = PasswordCommand(commandString, password);
+            command.getResponse(session, response);
+        } else {
+            response = "-Wrong password, try again";
+        }
 
     // Type
     } else if(commandString == cmds.filetype) {
