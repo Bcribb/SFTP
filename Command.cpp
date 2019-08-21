@@ -189,6 +189,7 @@ DeleteCommand::DeleteCommand(string command, string filename) : Command(command)
 }
 
 void DeleteCommand::deleteFile(SeshGremlin& session, string& resp) {
+    // TODO: make this a function or put it somewhere better
     if(session.directory[session.directory.length() - 1] != '/') {
         session.directory = session.directory + "/";
     }
@@ -201,6 +202,40 @@ void DeleteCommand::deleteFile(SeshGremlin& session, string& resp) {
         }
     } else {
         resp = "-Not deleted because: File doesn't exist";
+    }
+}
+
+/*-------RenameCommand---------*/
+RenameCommand::RenameCommand(string command, string filename) : Command(command) {
+    this->filename = filename;
+    return;
+}
+
+void RenameCommand::setTarget(SeshGremlin& session, string& resp) {
+    if(session.directory[session.directory.length() - 1] != '/') {
+        session.directory = session.directory + "/";
+    }
+    
+    if(fileExists(session.directory + filename)) {
+        session.currentFile = session.directory + filename;
+        resp = "+File exists";
+        return;
+    } else {
+        resp = "-Can't find " + session.directory + filename;
+    }
+}
+
+/*-------TobeCommand---------*/
+TobeCommand::TobeCommand(string command, string filename) : Command(command) {
+    this->filename = filename;
+    return;
+}
+
+void TobeCommand::changeName(SeshGremlin& session, string& resp) {
+    if(rename(session.currentFile.c_str(), filename.c_str()) != 0) {
+        resp = "-File wasn't renamed because: Server failed to rename";
+    } else {
+        resp = "+" + session.currentFile + " renamed to " + filename;
     }
 }
 

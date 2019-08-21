@@ -143,12 +143,37 @@ void directory(string inputCommand, string& response) {
             DeleteCommand command = DeleteCommand(commandString, filename);
             command.deleteFile(session, response);
         } else {
-            response = "Not deleted because: Invalid entry";
+            response = "-Not deleted because: Invalid entry";
         }
     
     // Rename file
     } else if(commandString == cmds.rename) {
-        cout << "NAME" << endl;
+        string filename = inputCommand.substr(5);
+        if(cmds.checkRename(inputCommand)) {
+            RenameCommand command = RenameCommand(commandString, filename);
+            command.setTarget(session, response);
+        } else {
+            //TODO generic
+            session.currentFile.clear();
+            if(session.directory[session.directory.length() - 1] != '/') {
+                session.directory = session.directory + "/";
+            }
+            response = "-Can't find " + session.directory + filename;
+        }
+
+    // Renames sub call, TOBE
+    } else if(commandString == cmds.tobe) {
+        if(cmds.checkTobe(inputCommand)) {
+            if(session.currentFile.empty()) {
+                response = "-File wasn't renamed because: No file specified";
+            } else {
+                string filename = inputCommand.substr(5);
+                TobeCommand command = TobeCommand(commandString, filename);
+                command.changeName(session, response);
+                session.currentFile.clear();
+            }
+        }
+        cout << "TOBE" << endl;
     
     // Done command
     } else if(commandString == cmds.done) {

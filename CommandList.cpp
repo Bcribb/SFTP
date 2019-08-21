@@ -9,11 +9,13 @@ const string CommandList::listDirectory = "LIST";
 const string CommandList::changeDir = "CDIR";
 const string CommandList::deleteFile = "KILL";
 const string CommandList::rename = "NAME";
+const string CommandList::tobe= "TOBE";
 const string CommandList::done = "DONE";
 const string CommandList::requestSend = "RETR";
 const string CommandList::storeFile = "STOR";
 
 bool CommandList::checkUsername(string input) {
+    // TODO make this a generic function
     if(input[4] != ' ') {
         cout << "INVALID ENTRY: Missing space" << endl;
         return false;
@@ -108,6 +110,34 @@ bool CommandList::checkChange(string input) {
 }
 
 bool CommandList::checkDelete(string input) {
+    if(input[4] != ' ') {
+        cout << "INVALID ENTRY: Missing space" << endl;
+        return false;
+    } 
+
+    if(!singleArg(input.substr(5))) {
+        cout << "INVALID ENTRY: Invalid format" << endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool CommandList::checkRename(string input) {
+    if(input[4] != ' ') {
+        cout << "INVALID ENTRY: Missing space" << endl;
+        return false;
+    } 
+
+    if(!singleArg(input.substr(5))) {
+        cout << "INVALID ENTRY: Invalid format" << endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool CommandList::checkTobe(string input) {
     if(input[4] != ' ') {
         cout << "INVALID ENTRY: Missing space" << endl;
         return false;

@@ -20,6 +20,7 @@ class SeshGremlin {
 
         filetype type;
         string directory;
+        string currentFile;
 
         bool hasAccess;
 
@@ -110,4 +111,24 @@ class DeleteCommand : public Command {
         DeleteCommand(string command, string filename);
 
         void deleteFile(SeshGremlin& session, string& response);
+};
+
+/*-------RenameCommand---------*/
+class RenameCommand : public Command {
+    public:
+        string filename;
+
+        RenameCommand(string command, string filename);
+
+        void setTarget(SeshGremlin& session, string& response);
+};
+
+/*-------TobeCommand---------*/
+class TobeCommand : public Command {
+    public:
+        string filename;
+
+        TobeCommand(string command, string filename);
+
+        void changeName(SeshGremlin& session, string& response);
 };

@@ -17,6 +17,7 @@ class CommandList {
         static const string changeDir;
         static const string deleteFile;
         static const string rename;
+        static const string tobe;
         static const string done;
         static const string requestSend;
         static const string storeFile;
@@ -28,4 +29,6 @@ class CommandList {
         bool checkList(string input);
         bool checkChange(string input);
         bool checkDelete(string input);
+        bool checkRename(string input);
+        bool checkTobe(string input);
 };
