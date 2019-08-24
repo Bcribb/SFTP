@@ -150,3 +150,11 @@ bool CommandList::checkTobe(string input) {
 
     return true;
 }
+
+bool CommandList::checkDone(string input) {
+    if(input == "DONE") {
+        return true;
+    }
+
+    return false;
+}

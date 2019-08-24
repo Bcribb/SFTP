@@ -15,7 +15,8 @@
 using namespace std;
 
 CommandList cmds = CommandList();
-SeshGremlin session = SeshGremlin();
+SeshGremlin session;
+int new_socket;
 
 void init(int* server_fd, int* new_socket, int* valread, struct sockaddr_in* address, int* opt, int* addrlen) {
     // Creating socket file descriptor, socket(domain(IPv4 or IPv6), type(TCP or UDP), protocol value)
@@ -47,16 +48,6 @@ void init(int* server_fd, int* new_socket, int* valread, struct sockaddr_in* add
         cerr << "listen"; 
         exit(EXIT_FAILURE); 
     } 
-
-    // Block until we can accept a connection to the server
-    if ((*new_socket = accept(*server_fd, (struct sockaddr *)address, (socklen_t*)addrlen)) < 0) { 
-        cerr << "accept"; 
-        exit(EXIT_FAILURE); 
-    } 
-
-    string response = "+Blain SFTP Service\0";
-    cout << response << endl; 
-    send(*new_socket, response.data(), response.size(), 0); 
 }
 
 // Directs to operations for different commands
@@ -93,6 +84,17 @@ void directory(string inputCommand, string& response) {
             command.getResponse(session, response);
         } else {
             response = "-Wrong password, try again";
+        }
+
+    // Done command
+    } else if(commandString == cmds.done) {
+        if(cmds.checkDone(inputCommand)) {
+            response = "+Connection closed";
+            send(new_socket, response.data(), response.size(), 0); 
+            close(session.newSocket);
+            session.open = false;
+        } else {
+            response = "-Invalid entry";
         }
 
     // Check at this point whether the user has access
@@ -154,7 +156,7 @@ void directory(string inputCommand, string& response) {
             command.setTarget(session, response);
         } else {
             //TODO generic
-            session.currentFile.clear();
+            session.renamingFile.clear();
             if(session.directory[session.directory.length() - 1] != '/') {
                 session.directory = session.directory + "/";
             }
@@ -164,20 +166,15 @@ void directory(string inputCommand, string& response) {
     // Renames sub call, TOBE
     } else if(commandString == cmds.tobe) {
         if(cmds.checkTobe(inputCommand)) {
-            if(session.currentFile.empty()) {
+            if(session.renamingFile.empty()) {
                 response = "-File wasn't renamed because: No file specified";
             } else {
                 string filename = inputCommand.substr(5);
                 TobeCommand command = TobeCommand(commandString, filename);
                 command.changeName(session, response);
-                session.currentFile.clear();
+                session.renamingFile.clear();
             }
         }
-        cout << "TOBE" << endl;
-    
-    // Done command
-    } else if(commandString == cmds.done) {
-        cout << "DONE" << endl;
     
     // Request file
     } else if(commandString == cmds.requestSend) {
@@ -192,11 +189,16 @@ void directory(string inputCommand, string& response) {
         response = "Invalid command";
         cout << "Invalid command" << endl;
     }
+
+    // Clear renaming file if user is aborting that command
+    if((commandString != cmds.tobe) && (commandString != cmds.rename)) {
+        session.renamingFile.clear();
+    }
 }
 
 int main(int argc, char const *argv[]) 
 { 
-    int server_fd, new_socket, valread; 
+    int server_fd, valread; 
     struct sockaddr_in address; 
     int opt = 1; 
     int addrlen = sizeof(address); 
@@ -207,16 +209,36 @@ int main(int argc, char const *argv[])
     init(&server_fd, &new_socket, &valread, &address, &opt, &addrlen);
 
     // Accept connections as they come in
-    while (1) {
-        // Read in the command, print it
-        valread = read(new_socket , buffer, 1024);
-        cout << "Command was : " << buffer << endl;
+    while (true) {
+        cout << "Waiting for a connection..." << endl;
 
-        directory(string(buffer), response);
-        
-        memset(buffer, 0, sizeof(buffer));
+        // Block until we can accept a connection to the server
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) { 
+            cerr << "accept failed\n"; 
+            exit(EXIT_FAILURE); 
+        } 
 
-        // Send our response to the client
+        string response = "+Blain SFTP Service\0";
+        cout << response << endl; 
+
         send(new_socket, response.data(), response.size(), 0); 
+
+        session = SeshGremlin();
+
+        while(session.open) {
+            // Read in the command, print it
+            valread = read(new_socket, buffer, 1024);
+            cout << "Command was : " << buffer << endl;
+
+            directory(string(buffer), response);
+            
+
+            // Send our response to the client
+            if(string(buffer) != "SEND") {
+                send(new_socket, response.data(), response.size(), 0); 
+            }
+
+            memset(buffer, 0, sizeof(buffer));
+        }
     }
 } 

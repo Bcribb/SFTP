@@ -14,13 +14,17 @@ using namespace std;
 /*-------SeshGremlin---------*/
 class SeshGremlin {
     public:
+        int newSocket;
+
+        bool open;
+
         string username;
         string account;
         string password;
 
         filetype type;
         string directory;
-        string currentFile;
+        string renamingFile;
 
         bool hasAccess;
 

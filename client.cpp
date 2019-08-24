@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include <cstdio>
 
+bool connected = false;
+
 #define PORT_DEFAULT 8080
 using namespace std;
 
@@ -40,7 +42,8 @@ void init(int* sock, int* valread, struct sockaddr_in &serv_addr, string ipAddre
 		cerr << "\nConnection Failed\n"; 
 		exit(EXIT_FAILURE); 
 	} else {
-		cout << "Connection Succeeded\n";
+		cout << "Connection Succeeded" << endl;
+		connected = true;
 		char buffer[1024] = {0};
 		*valread = read(*sock , buffer, 1024); 
 		cout << endl << "Response: " << string(buffer) << endl;
@@ -56,40 +59,48 @@ int main(int argc, char const *argv[])
 	string ipAddress;
 	string sport;
 	int port = -1;
-	cout << "Please enter IP address of server (default = localhost):\n> ";
-	getline(cin, ipAddress);
-	if(ipAddress.empty()) {
-		ipAddress = "127.0.0.1";
-	}
-	cout << "\nPlease enter port of server (default = 8080):\n> ";
-	getline(cin, sport);
-	if(!sport.empty()) {
-		stringstream ssport(sport);
-		ssport >> port;
-	} else {
-		port = PORT_DEFAULT;
-	}
-
-	// Initialise socket and connect to specified server
-	init(&sock, &valread, serv_addr, ipAddress, port);
+	
 
 	string command; 
 	char buffer[1024] = {0}; 
 
-	while(1) {
-		cout << "\nPlease enter a command:\n> ";
-		getline(cin, command);
-
-		if(command.empty()) {
-			continue;
+	while(true) {
+		cout << endl << "Please enter IP address of server (default = localhost):" << endl << ">" << flush;
+		getline(cin, ipAddress);
+		if(ipAddress.empty()) {
+			ipAddress = "127.0.0.1";
+		}
+		cout << endl << "Please enter port of server (default = 8080):" << endl << ">" << flush;
+		getline(cin, sport);
+		if(!sport.empty()) {
+			stringstream ssport(sport);
+			ssport >> port;
+		} else {
+			port = PORT_DEFAULT;
 		}
 
-		send(sock, command.data(), command.size(), 0); 
+		// Initialise socket and connect to specified server
+		init(&sock, &valread, serv_addr, ipAddress, port);
 
-		// Receive response
-		valread = read(sock, buffer, 1024); 
-		buffer[valread] = '\0';
+		while(connected) {
+			cout << "\nPlease enter a command:\n> ";
+			getline(cin, command);
 
-		cout << string(buffer) << endl;
+			if(command.empty()) {
+				continue;
+			}
+
+			if(command == "DONE") {
+				connected = false;
+			}
+
+			send(sock, command.data(), command.size(), 0); 
+
+			// Receive response
+			valread = read(sock, buffer, 1024); 
+			buffer[valread] = '\0';
+
+			cout << string(buffer) << endl;
+		}
 	}
 } 

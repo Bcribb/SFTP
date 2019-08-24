@@ -4,6 +4,7 @@ using namespace std;
 
 /*-------SeshGremlin---------*/
 SeshGremlin::SeshGremlin() {
+    open = true;
     hasAccess = false;
     directory = "./files";
     return;
@@ -140,6 +141,10 @@ ListCommand::ListCommand(string command, bool verbose, string path) : Command(co
 }
 
 void ListCommand::listDirectory(SeshGremlin& session, string& response) {
+    if(session.directory[session.directory.length() - 1] != '/') {
+        session.directory = session.directory + "/";
+    }
+
     struct dirent *entry;
     string truePath = session.directory + path;
     DIR *directory = opendir(truePath.c_str());
@@ -217,7 +222,7 @@ void RenameCommand::setTarget(SeshGremlin& session, string& resp) {
     }
     
     if(fileExists(session.directory + filename)) {
-        session.currentFile = session.directory + filename;
+        session.renamingFile = filename;
         resp = "+File exists";
         return;
     } else {
@@ -232,10 +237,10 @@ TobeCommand::TobeCommand(string command, string filename) : Command(command) {
 }
 
 void TobeCommand::changeName(SeshGremlin& session, string& resp) {
-    if(rename(session.currentFile.c_str(), filename.c_str()) != 0) {
+    if(rename((session.directory + session.renamingFile).c_str(), (session.directory + filename).c_str()) != 0) {
         resp = "-File wasn't renamed because: Server failed to rename";
     } else {
-        resp = "+" + session.currentFile + " renamed to " + filename;
+        resp = "+" + session.renamingFile + " renamed to " + filename;
     }
 }
 

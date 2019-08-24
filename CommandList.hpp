@@ -31,4 +31,5 @@ class CommandList {
         bool checkDelete(string input);
         bool checkRename(string input);
         bool checkTobe(string input);
+        bool checkDone(string input);
 };
