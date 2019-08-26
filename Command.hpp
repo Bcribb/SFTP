@@ -28,6 +28,8 @@ class SeshGremlin {
         string renamingFile;
         string retrievingFile;
 
+        bool transferDone;
+
         bool hasAccess;
 
         SeshGremlin();
@@ -147,5 +149,5 @@ class RequestCommand : public Command {
         RequestCommand(string command, string filename);
 
         void request(SeshGremlin& session, string& response);
-        void send(SeshGremlin& session);
+        void send(SeshGremlin& session, int socket);
 };

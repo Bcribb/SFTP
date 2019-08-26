@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include <cstdio>
 
+#include "helpers.hpp"
+
 bool connected = false;
 
 #define PORT_DEFAULT 8080
@@ -82,6 +84,9 @@ int main(int argc, char const *argv[])
 		// Initialise socket and connect to specified server
 		init(&sock, &valread, serv_addr, ipAddress, port);
 
+		string filename;
+		int filesize;
+
 		while(connected) {
 			cout << "\nPlease enter a command:\n> ";
 			getline(cin, command);
@@ -94,13 +99,24 @@ int main(int argc, char const *argv[])
 				connected = false;
 			}
 
+			if(command.substr(0, 4) == "RETR") {
+				filename = command.substr(5);
+			}
+
 			send(sock, command.data(), command.size(), 0); 
 
-			// Receive response
-			valread = read(sock, buffer, 1024); 
-			buffer[valread] = '\0';
+			if(command == "SEND") {
+				receiveFile(filename, sock, filesize);
+			} else {
+				// Receive response
+				valread = read(sock, buffer, 1024); 
+				buffer[valread] = '\0';
+				cout << string(buffer) << endl;
+			}
 
-			cout << string(buffer) << endl;
+			if((command.substr(0, 4) == "RETR") && (buffer[0] != '-')) {
+				filesize = stoi(buffer);
+			}
 		}
 	}
 } 

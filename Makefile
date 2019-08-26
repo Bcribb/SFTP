@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -g -Wfatal-errors -lstdc++ -std=c++11
 
 SSOURCES = server.cpp Command.cpp CommandList.cpp helpers.cpp
-CSOURCES = client.cpp
+CSOURCES = client.cpp helpers.cpp
 
 SOBJECTS = ${SSOURCES:.cpp=.o}
 COBJECTS = ${CSOURCES:.cpp=.o}

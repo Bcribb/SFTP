@@ -20,6 +20,8 @@ class CommandList {
         static const string tobe;
         static const string done;
         static const string requestSend;
+        static const string send;
+        static const string stop;
         static const string storeFile;
 
         bool checkUsername(string input);

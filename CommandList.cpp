@@ -12,7 +12,10 @@ const string CommandList::rename = "NAME";
 const string CommandList::tobe= "TOBE";
 const string CommandList::done = "DONE";
 const string CommandList::requestSend = "RETR";
+const string CommandList::send = "SEND";
+const string CommandList::stop = "STOP";
 const string CommandList::storeFile = "STOR";
+
 
 bool CommandList::checkUsername(string input) {
     // TODO make this a generic function

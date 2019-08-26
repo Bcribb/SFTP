@@ -182,11 +182,25 @@ void directory(string inputCommand, string& response) {
             string filename = inputCommand.substr(5);
             RequestCommand command = RequestCommand(commandString, filename);
             command.request(session, response);
-            // send(new_socket, response.data(), response.size(), 0); 
-            // char buffer[1024];
-            // while(!session.transferDone) {
-            //     read(new_socket, buffer, 1024);
-            // }            
+            if(response[0] == '-') return;
+            send(new_socket, response.data(), response.size(), 0); 
+            char buffer[1024];
+            session.transferDone = false;
+            while(!session.transferDone) {
+                read(new_socket, buffer, 1024);
+                commandString = string(buffer).substr(0, 4);
+                cout << "Command was : " << command << endl;
+                if(commandString == cmds.stop) {
+                    response = "+ok, RETR aborted";
+                    session.transferDone = true;
+                } else if(commandString == cmds.send) {
+                    command.send(session, new_socket);
+                    session.transferDone = true;
+                } else {
+                    response = "-Please reply with either SEND or STOP";
+                    send(new_socket, response.data(), response.size(), 0); 
+                }
+            }            
         } else {
             cout << "NAH BO" << endl;
             response = "-F";
@@ -245,7 +259,9 @@ int main(int argc, char const *argv[])
             directory(string(buffer), response);
             
             // Send our response to the client
-            send(new_socket, response.data(), response.size(), 0); 
+            if(string(buffer) != cmds.requestSend) {
+                send(new_socket, response.data(), response.size(), 0);
+            }
 
             memset(buffer, 0, sizeof(buffer));
         }

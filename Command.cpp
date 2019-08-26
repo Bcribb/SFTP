@@ -246,7 +246,7 @@ void TobeCommand::changeName(SeshGremlin& session, string& resp) {
 
 /*-------RequestCommand---------*/
 RequestCommand::RequestCommand(string command, string filename) : Command(command) {
-    this->filename = filename;
+    this->filename = filename.c_str();
     return;
 }
 
@@ -256,18 +256,19 @@ void RequestCommand::request(SeshGremlin& session, string& resp) {
     }
 
     if(fileExists(session.directory + filename)) {
-        session.retrievingFile = session.directory + filename;
-        cout << getFilesize((session.directory + filename).c_str()) << endl;
-        resp = "YOZA";
+        session.retrievingFile = (session.directory + filename).c_str();
+        cout << "TRYNA " << session.directory + filename;
+        cout << "set file as " << session.retrievingFile << endl;
+        resp = to_string(getFilesize((session.directory + filename).c_str()));
     } else {
         resp = "-File doesn't exist";
     }
 }
 
-void RequestCommand::send(SeshGremlin& session) {
-
+void RequestCommand::send(SeshGremlin& session, int socket) {
+    cout << "FINNA SEND " << session.retrievingFile << endl;
+    sendFile(session.retrievingFile, socket);
 }
-
 
 /*-----------COUT OVERRIDES FOR CLASSES------------*/
 
