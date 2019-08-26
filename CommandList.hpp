@@ -32,4 +32,5 @@ class CommandList {
         bool checkRename(string input);
         bool checkTobe(string input);
         bool checkDone(string input);
+        bool checkRequest(string input);
 };

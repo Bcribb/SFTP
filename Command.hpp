@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <iostream>
+#include <sys/stat.h>
 
 #include "helpers.hpp"
 
@@ -25,6 +26,7 @@ class SeshGremlin {
         filetype type;
         string directory;
         string renamingFile;
+        string retrievingFile;
 
         bool hasAccess;
 
@@ -135,4 +137,15 @@ class TobeCommand : public Command {
         TobeCommand(string command, string filename);
 
         void changeName(SeshGremlin& session, string& response);
+};
+
+/*-------RequestCommand---------*/
+class RequestCommand : public Command {
+    public:
+        string filename;
+
+        RequestCommand(string command, string filename);
+
+        void request(SeshGremlin& session, string& response);
+        void send(SeshGremlin& session);
 };

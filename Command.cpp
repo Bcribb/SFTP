@@ -244,6 +244,30 @@ void TobeCommand::changeName(SeshGremlin& session, string& resp) {
     }
 }
 
+/*-------RequestCommand---------*/
+RequestCommand::RequestCommand(string command, string filename) : Command(command) {
+    this->filename = filename;
+    return;
+}
+
+void RequestCommand::request(SeshGremlin& session, string& resp) {
+    if(session.directory[session.directory.length() - 1] != '/') {
+        session.directory = session.directory + "/";
+    }
+
+    if(fileExists(session.directory + filename)) {
+        session.retrievingFile = session.directory + filename;
+        cout << getFilesize((session.directory + filename).c_str()) << endl;
+        resp = "YOZA";
+    } else {
+        resp = "-File doesn't exist";
+    }
+}
+
+void RequestCommand::send(SeshGremlin& session) {
+
+}
+
 
 /*-----------COUT OVERRIDES FOR CLASSES------------*/
 

@@ -178,7 +178,19 @@ void directory(string inputCommand, string& response) {
     
     // Request file
     } else if(commandString == cmds.requestSend) {
-        cout << "RETR" << endl;
+        if(cmds.checkRequest(inputCommand)) {
+            string filename = inputCommand.substr(5);
+            RequestCommand command = RequestCommand(commandString, filename);
+            command.request(session, response);
+            // send(new_socket, response.data(), response.size(), 0); 
+            // char buffer[1024];
+            // while(!session.transferDone) {
+            //     read(new_socket, buffer, 1024);
+            // }            
+        } else {
+            cout << "NAH BO" << endl;
+            response = "-F";
+        }
     
     // Request store
     } else if(commandString == cmds.storeFile) {
@@ -232,11 +244,8 @@ int main(int argc, char const *argv[])
 
             directory(string(buffer), response);
             
-
             // Send our response to the client
-            if(string(buffer) != "SEND") {
-                send(new_socket, response.data(), response.size(), 0); 
-            }
+            send(new_socket, response.data(), response.size(), 0); 
 
             memset(buffer, 0, sizeof(buffer));
         }

@@ -12,3 +12,11 @@ bool singleArg(string input) {
 bool fileExists(const string& name) {
     return ( access( name.c_str(), F_OK ) != -1 );
 }
+
+int getFilesize(const char* filename) {
+    struct stat fileStats;
+    if(stat(filename, &fileStats)) {
+        return 0;
+    }
+    return fileStats.st_size;
+}
