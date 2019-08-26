@@ -1,23 +1,27 @@
-CC = g++
-CFLAGS = -g -Wfatal-errors -lstdc++ -std=c++11
+CXX = g++
+CXXFLAGS = -g -Wfatal-errors -lstdc++ -std=c++11
+OBJFLAGS = -c
 
 SSOURCES = server.cpp Command.cpp CommandList.cpp helpers.cpp
 CSOURCES = client.cpp helpers.cpp
 
-SOBJECTS = ${SSOURCES:.cpp=.o}
-COBJECTS = ${CSOURCES:.cpp=.o}
+SOBJECTS = $(SSOURCES:.cpp=.o)
+COBJECTS = $(CSOURCES:.cpp=.o)
 
 SERVER = server
 CLIENT = client
 
-all: ${SERVER} ${CLIENT}
+%.o: %.cpp
+	$(CXX) $(OBJFLAGS) $(CXXFLAGS) -o $@ $<
+
+all: $(SERVER) $(CLIENT)
 	@echo Compiling server and client
     
-${SERVER}: ${SOBJECTS}
-	${CC} ${CFLAGS} ${SSOURCES} -o ${SERVER}
+$(SERVER): $(SOBJECTS)
+	$(CXX) $(CXXFLAGS) $(SSOURCES) -o $(SERVER)
 
-${CLIENT}: ${COBJECTS}
-	${CC} ${CFLAGS} ${CSOURCES} -o ${CLIENT}
+$(CLIENT): $(COBJECTS)
+	$(CXX) $(CXXFLAGS) $(CSOURCES) -o $(CLIENT)
 
 clean:
 	-rm -f *.o

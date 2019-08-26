@@ -257,16 +257,12 @@ void RequestCommand::request(SeshGremlin& session, string& resp) {
 
     if(fileExists(session.directory + filename)) {
         session.retrievingFile = (session.directory + filename).c_str();
-        cout << "TRYNA " << session.directory + filename;
-        cout << "set file as " << session.retrievingFile << endl;
-        resp = to_string(getFilesize((session.directory + filename).c_str()));
+        resp = intToString(getFilesize((session.directory + filename).c_str()));
     } else {
-        resp = "-File doesn't exist";
     }
 }
 
 void RequestCommand::send(SeshGremlin& session, int socket) {
-    cout << "FINNA SEND " << session.retrievingFile << endl;
     sendFile(session.retrievingFile, socket);
 }
 

@@ -27,6 +27,7 @@ void sendFile(string filename, int socket) {
     char buffer[BUFFER_SIZE];
     while(!feof(filePointer)) {
         if((bytesRead = fread(&buffer, 1, BUFFER_SIZE, filePointer)) > 0) {
+            cout << "Sending: " << buffer << endl;
             send(socket, buffer, bytesRead, 0);
         } else {
             break;
@@ -47,4 +48,18 @@ void receiveFile(string filename, int socket, int filesize) {
         numer += datasize;
     }
     file.close();
+}
+
+int stringToInt(string input) {
+    stringstream ss(input);
+    int out = 0;
+    ss >> out;
+    return out;
+}
+
+string intToString(int input) {
+    ostringstream ss;
+    ss << input;
+    string out = ss.str();
+    return out;
 }
