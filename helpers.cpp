@@ -22,18 +22,24 @@ int getFilesize(const char* filename) {
 }
 
 void sendFile(string filename, int socket) {
-    FILE *filePointer = fopen((filename).c_str(), "rb");
-    int bytesRead;
-    char buffer[BUFFER_SIZE];
-    while(!feof(filePointer)) {
-        if((bytesRead = fread(&buffer, 1, BUFFER_SIZE, filePointer)) > 0) {
-            cout << "Sending: " << buffer << endl;
-            send(socket, buffer, bytesRead, 0);
-        } else {
-            break;
+    ifstream file(filename, ifstream::binary);
+    if(file) {
+        char buffer[BUFFER_SIZE + 1];
+        int sent = 0;
+
+        file.seekg(0, file.end);
+        int length = file.tellg();
+        file.seekg(0, file.beg);
+
+        while(length > 0) {
+            file.read(buffer, BUFFER_SIZE - 1);
+            buffer[file.gcount()] = '\0';
+            cout << "SENDING:" << endl << string(buffer) << endl;
+            send(socket, buffer, file.gcount(), 0);
+            length -= file.gcount();
         }
     }
-    fclose(filePointer);
+    file.close();
 }
 
 void receiveFile(string filename, int socket, int filesize) {
@@ -44,7 +50,8 @@ void receiveFile(string filename, int socket, int filesize) {
     file.open(filename);
     while(numer < filesize) {
         datasize = recv(socket, buffer, BUFFER_SIZE, 0);
-        file << buffer;
+        cout << "RECEIVED: " << endl << buffer << endl;
+        file.write(buffer, datasize);
         numer += datasize;
     }
     file.close();
