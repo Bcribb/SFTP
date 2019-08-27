@@ -141,6 +141,10 @@ int main(int argc, char const *argv[])
 
 				sendFile(filename, sock);
 
+				valread = read(sock, buffer, 1024); 
+				buffer[valread] = '\0';
+				cout << string(buffer) << endl;
+
 			} else {
 				// Receive response
 				valread = read(sock, buffer, 1024); 

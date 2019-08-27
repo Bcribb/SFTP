@@ -216,17 +216,14 @@ void directory(string inputCommand, string& response) {
             StoreCommand command = StoreCommand(commandString, type, filename);
             command.store(session, response);
 
-            cout << "answer" << endl;
             // Tell them the answer
             send(new_socket, response.data(), response.size(), 0); 
 
-            cout << "filesize" << endl;
             // Read the filesize
             char buffer[1024];
             read(new_socket, buffer, 1024);
             int filesize = stoi(string(buffer).substr(5));
 
-            cout << "check space" << endl;
             // Check we have space
             if(enoughSpace(filesize)) {
                 response = "+ok, waiting for file";
@@ -237,9 +234,10 @@ void directory(string inputCommand, string& response) {
                 return;
             }
 
-            cout << "receive" << endl;
             // Receive the file
             command.doTheThing(session, filesize, new_socket);
+
+            response = "+Saved " + filename;
 
         } else {
             response = "-Invalid entry";

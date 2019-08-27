@@ -284,8 +284,6 @@ void StoreCommand::store(SeshGremlin& session, string& response) {
     if(session.directory[session.directory.length() - 1] != '/') {
         session.directory = session.directory + "/";
     }
-    
-    cout << type << endl;
 
     switch(type) {
         case NEW:
