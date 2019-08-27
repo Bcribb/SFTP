@@ -1,5 +1,4 @@
 #include <string>
-#include <sstream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <dirent.h>
@@ -10,6 +9,7 @@
 
 enum response {loggedIn, success, error};
 enum filetype {ascii, bin, con};
+enum storeType {NEW, OLD, APP};
 
 using namespace std;
 
@@ -151,4 +151,16 @@ class RequestCommand : public Command {
 
         void request(SeshGremlin& session, string& response);
         void send(SeshGremlin& session, int socket);
+};
+
+/*-------StoreCommand---------*/
+class StoreCommand : public Command {
+    public:
+        string filename;
+        storeType type;
+
+        StoreCommand(string command, string storeType,string filename);
+
+        void store(SeshGremlin& session, string& response);
+        void doTheThing(SeshGremlin& session, int filesize, int socket);
 };

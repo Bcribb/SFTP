@@ -11,7 +11,7 @@
 #include "Command.hpp"
 #include "CommandList.hpp"
 
-#define PORT 8080 
+#define PORT 10000 
 using namespace std;
 
 CommandList cmds = CommandList();
@@ -25,7 +25,7 @@ void init(int* server_fd, int* new_socket, int* valread, struct sockaddr_in* add
         exit(EXIT_FAILURE); 
     } 
 
-    // Forcefully attaching socket to the port 8080 
+    // Forcefully attaching socket to the port 
     if (setsockopt(*server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, opt, sizeof(*opt))) { 
         cerr << "setsockopt"; 
         exit(EXIT_FAILURE); 
@@ -36,7 +36,7 @@ void init(int* server_fd, int* new_socket, int* valread, struct sockaddr_in* add
     address->sin_addr.s_addr = INADDR_ANY;
     address->sin_port = htons(PORT);
 
-    // Forcefully attaching socket to the port 8080 
+    // Forcefully attaching socket to the port 
     if (bind(*server_fd, (struct sockaddr *)address, sizeof(*address)) < 0) { 
         cerr << "bind failed";
         exit(EXIT_FAILURE); 
@@ -203,13 +203,47 @@ void directory(string inputCommand, string& response) {
                 }
             }            
         } else {
-            cout << "NAH BO" << endl;
-            response = "-F";
+            response = "-Invalid entry";
         }
     
     // Request store
     } else if(commandString == cmds.storeFile) {
-        cout << "STOR" << endl;
+        if(cmds.checkStore(inputCommand)) {
+            string type = inputCommand.substr(5, 3);
+            string filename = inputCommand.substr(9);
+
+            // Find whether we need to create new file or hwat
+            StoreCommand command = StoreCommand(commandString, type, filename);
+            command.store(session, response);
+
+            cout << "answer" << endl;
+            // Tell them the answer
+            send(new_socket, response.data(), response.size(), 0); 
+
+            cout << "filesize" << endl;
+            // Read the filesize
+            char buffer[1024];
+            read(new_socket, buffer, 1024);
+            int filesize = stoi(string(buffer).substr(5));
+
+            cout << "check space" << endl;
+            // Check we have space
+            if(enoughSpace(filesize)) {
+                response = "+ok, waiting for file";
+                send(new_socket, response.data(), response.size(), 0); 
+            } else {
+                response = "-Not enough room, don't send it oh god please";
+                send(new_socket, response.data(), response.size(), 0); 
+                return;
+            }
+
+            cout << "receive" << endl;
+            // Receive the file
+            command.doTheThing(session, filesize, new_socket);
+
+        } else {
+            response = "-Invalid entry";
+        }
     
     // They entered something wrong
     } else {

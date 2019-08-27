@@ -35,4 +35,5 @@ class CommandList {
         bool checkTobe(string input);
         bool checkDone(string input);
         bool checkRequest(string input);
+        bool checkStore(string input);
 };

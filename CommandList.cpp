@@ -175,3 +175,28 @@ bool CommandList::checkRequest(string input) {
 
     return true;
 }
+
+bool CommandList::checkStore(string input) {
+    if(input[4] != ' ') {
+        cout << "INVALID ENTRY: Missing space" << endl;
+        return false;
+    } 
+
+    string type = input.substr(5, 3);
+    if(type != "NEW" && type != "OLD" && type != "APP") {
+        cout << "INVALID ENTRY: Invalid format" << endl;
+        return false;
+    }
+
+    if(input[8] != ' ') {
+        cout << "INVALID ENTRY: Missing space" << endl;
+        return false;
+    }
+
+    if(!singleArg(input.substr(9))) {
+        cout << "INVALID ENTRY: Invalid format" << endl;
+        return false;
+    }
+
+    return true;
+}

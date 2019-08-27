@@ -13,7 +13,7 @@
 
 bool connected = false;
 
-#define PORT_DEFAULT 8080
+#define PORT_DEFAULT 10000
 using namespace std;
 
 void init(int* sock, int* valread, struct sockaddr_in &serv_addr, string ipAddress, int port) {
@@ -54,12 +54,12 @@ void init(int* sock, int* valread, struct sockaddr_in &serv_addr, string ipAddre
 
 int main(int argc, char const *argv[]) 
 { 
-	chdir("out");
+	chdir("client_files");
 
 	int sock = 0, valread; 
 	struct sockaddr_in serv_addr; 
 	
-	// Get user to input ipaddress and port, defaults to localhost:8080
+	// Get user to input ipaddress and port, defaults to localhost:10000
 	string ipAddress;
 	string sport;
 	int port = -1;
@@ -69,12 +69,14 @@ int main(int argc, char const *argv[])
 	char buffer[1024] = {0}; 
 
 	while(true) {
+
+		// Get input from user to specificy ip and port
 		cout << endl << "Please enter IP address of server (default = localhost):" << endl << ">" << flush;
 		getline(cin, ipAddress);
 		if(ipAddress.empty()) {
 			ipAddress = "127.0.0.1";
 		}
-		cout << endl << "Please enter port of server (default = 8080):" << endl << ">" << flush;
+		cout << endl << "Please enter port of server (default = 10000):" << endl << ">" << flush;
 		getline(cin, sport);
 		if(!sport.empty()) {
 			stringstream ssport(sport);
@@ -88,6 +90,7 @@ int main(int argc, char const *argv[])
 
 		string filename;
 		int filesize;
+		string storType;
 
 		while(connected) {
 			cout << "\nPlease enter a command:\n> ";
@@ -97,18 +100,47 @@ int main(int argc, char const *argv[])
 				continue;
 			}
 
+			// Pre-checks for specified commands
 			if(command == "DONE") {
 				connected = false;
-			}
-
-			if(command.substr(0, 4) == "RETR") {
+			} else if(command.substr(0, 4) == "RETR") {
 				filename = command.substr(5);
+			} else if(command.substr(0, 4) == "STOR") {
+				filename = command.substr(9);
+				storType = command.substr(5, 3);
+				if(!fileExists(filename)) {
+					cout << "-File doesn't exist" << endl;
+					continue;
+				}
 			}
 
 			send(sock, command.data(), command.size(), 0); 
 
 			if(command == "SEND") {
 				receiveFile(filename, sock, filesize);
+
+			// Store command follow up
+			} else if(command.substr(0, 4) == "STOR") {
+				valread = read(sock, buffer, 1024); 
+				buffer[valread] = '\0';
+				cout << string(buffer) << endl;
+				if(buffer[0] == '-') {
+					continue;
+				}
+
+				string thing = "SIZE " + to_string(getFilesize(filename.c_str()));
+				send(sock, thing.data(), thing.size(), 0);
+
+				valread = read(sock, buffer, 1024); 
+				buffer[valread] = '\0';
+				cout << string(buffer) << endl;
+
+				if(buffer[0] != '+') {
+					continue;
+				}
+
+				sendFile(filename, sock);
+
 			} else {
 				// Receive response
 				valread = read(sock, buffer, 1024); 

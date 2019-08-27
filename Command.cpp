@@ -6,7 +6,7 @@ using namespace std;
 SeshGremlin::SeshGremlin() {
     open = true;
     hasAccess = false;
-    directory = "./in";
+    directory = "./server_files";
     return;
 }
 
@@ -265,6 +265,55 @@ void RequestCommand::request(SeshGremlin& session, string& resp) {
 
 void RequestCommand::send(SeshGremlin& session, int socket) {
     sendFile(session.retrievingFile, socket);
+}
+
+/*-------StoreCommand---------*/
+StoreCommand::StoreCommand(string command, string storeType, string filename) : Command(command) {
+    this->filename = filename.c_str();
+    if(storeType == "NEW") {
+        type = NEW;
+    } else if(storeType == "OLD") {
+        type = OLD;
+    } else if(storeType == "APP") {
+        type = APP;
+    }
+    return;
+}
+
+void StoreCommand::store(SeshGremlin& session, string& response) {
+    if(session.directory[session.directory.length() - 1] != '/') {
+        session.directory = session.directory + "/";
+    }
+    
+    cout << type << endl;
+
+    switch(type) {
+        case NEW:
+            if(fileExists(session.directory + filename)) {
+                response = "+File exists, will create new generation of file";
+            } else {
+                response = "+File doesn't exist, will create new file";
+            }
+            break;
+        case OLD:
+            if(fileExists(session.directory + filename)) {
+                response = "+Will write over old file";
+            } else {
+                response = "+Will create new file";
+            }
+            break;
+        case APP:
+            if(fileExists(session.directory + filename)) {
+                response = "+Will append to file";
+            } else {
+                response = "+Will create new file";
+            }
+            break;
+    }
+}
+
+void StoreCommand::doTheThing(SeshGremlin& session, int filesize, int socket) {
+    receiveFile(session.directory + filename, socket, filesize);
 }
 
 /*-----------COUT OVERRIDES FOR CLASSES------------*/

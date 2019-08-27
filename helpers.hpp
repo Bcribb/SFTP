@@ -19,5 +19,6 @@ void sendFile(string filename, int socket);
 void receiveFile(string filename, int socket, int filesize);
 int stringToInt(string input);
 string intToString(int input);
+bool enoughSpace(int input);
 
 #endif

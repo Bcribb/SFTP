@@ -2,6 +2,9 @@
 #include <unistd.h>
 
 bool singleArg(string input) {
+    if(input.empty()) {
+        return false;
+    }
     if(input.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_/.") != std::string::npos) {
         return false;
     } else {
@@ -69,4 +72,8 @@ string intToString(int input) {
     ss << input;
     string out = ss.str();
     return out;
+}
+
+bool enoughSpace(int input) {
+    return true;
 }
