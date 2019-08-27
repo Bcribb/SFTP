@@ -54,6 +54,8 @@ void init(int* sock, int* valread, struct sockaddr_in &serv_addr, string ipAddre
 
 int main(int argc, char const *argv[]) 
 { 
+	chdir("out");
+
 	int sock = 0, valread; 
 	struct sockaddr_in serv_addr; 
 	

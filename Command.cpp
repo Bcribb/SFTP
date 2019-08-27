@@ -6,7 +6,7 @@ using namespace std;
 SeshGremlin::SeshGremlin() {
     open = true;
     hasAccess = false;
-    directory = "./files";
+    directory = "./in";
     return;
 }
 
@@ -259,6 +259,7 @@ void RequestCommand::request(SeshGremlin& session, string& resp) {
         session.retrievingFile = (session.directory + filename).c_str();
         resp = intToString(getFilesize((session.directory + filename).c_str()));
     } else {
+        resp = "-File doesn't exist";
     }
 }
 

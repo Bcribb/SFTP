@@ -182,6 +182,7 @@ void directory(string inputCommand, string& response) {
             string filename = inputCommand.substr(5);
             RequestCommand command = RequestCommand(commandString, filename);
             command.request(session, response);
+            cout << response << endl;
             if(response[0] == '-') return;
             send(new_socket, response.data(), response.size(), 0); 
             char buffer[1024];
@@ -259,7 +260,7 @@ int main(int argc, char const *argv[])
             directory(string(buffer), response);
             
             // Send our response to the client
-            if(string(buffer) != cmds.requestSend) {
+            if((string(buffer).substr(0, 4) != cmds.requestSend) || (response[0] = '-')) {
                 send(new_socket, response.data(), response.size(), 0);
             }
 

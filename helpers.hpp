@@ -1,6 +1,7 @@
 #ifndef HELPERS
 
 #include <string>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <iostream>

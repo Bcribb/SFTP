@@ -24,7 +24,7 @@ int getFilesize(const char* filename) {
 void sendFile(string filename, int socket) {
     ifstream file(filename, ifstream::binary);
     if(file) {
-        char buffer[BUFFER_SIZE + 1];
+        char buffer[BUFFER_SIZE];
         int sent = 0;
 
         file.seekg(0, file.end);
@@ -32,9 +32,8 @@ void sendFile(string filename, int socket) {
         file.seekg(0, file.beg);
 
         while(length > 0) {
-            file.read(buffer, BUFFER_SIZE - 1);
-            buffer[file.gcount()] = '\0';
-            cout << "SENDING:" << endl << string(buffer) << endl;
+            // memset(buffer, 0, sizeof(buffer));
+            file.read(buffer, BUFFER_SIZE);
             send(socket, buffer, file.gcount(), 0);
             length -= file.gcount();
         }
@@ -49,8 +48,9 @@ void receiveFile(string filename, int socket, int filesize) {
     ofstream file;
     file.open(filename);
     while(numer < filesize) {
-        datasize = recv(socket, buffer, BUFFER_SIZE, 0);
-        cout << "RECEIVED: " << endl << buffer << endl;
+        // memset(buffer, 0, sizeof(buffer));
+        datasize = read(socket, buffer, BUFFER_SIZE);
+        buffer[datasize] = '\0';
         file.write(buffer, datasize);
         numer += datasize;
     }
