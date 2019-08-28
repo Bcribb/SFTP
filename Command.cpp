@@ -20,7 +20,6 @@ response SeshGremlin::checkUsername() {
     }
 }
 
-// TODO: Implement some different creds
 response SeshGremlin::checkAccount() {
     if(checkLoggedIn(userList, username, account, password)) {
         return loggedIn;
@@ -116,7 +115,6 @@ void TypeCommand::changeType(SeshGremlin& session, string& response) {
 }
 
 /*-------ListCommand---------*/
-// TODO: Add verbosity
 ListCommand::ListCommand(string command, bool verbose, string path) : Command(command) {
     this->verbose = verbose;
     this->path = path;
@@ -140,14 +138,17 @@ void ListCommand::listDirectory(SeshGremlin& session, string& response) {
 
     response = "\n+" + session.directory + path + "\n";
     while ((entry = readdir(directory)) != NULL) {
-        response = response + entry->d_name + "\n";
+        response = response + entry->d_name;
+        if(verbose) {
+            response += "       " + to_string(getFilesize((session.directory + path + "/" + entry->d_name).c_str())) + " Bytes";
+        }
+        response += "\n";
     }
     
     closedir(directory);
 }
 
 /*-------ChangeCommand---------*/
-// TODO: make folder movement less janky
 ChangeCommand::ChangeCommand(string command, string path) : Command(command) {
     this->path = path;
     return;
@@ -177,7 +178,6 @@ DeleteCommand::DeleteCommand(string command, string filename) : Command(command)
 }
 
 void DeleteCommand::deleteFile(SeshGremlin& session, string& resp) {
-    // TODO: make this a function or put it somewhere better
     if(session.directory[session.directory.length() - 1] != '/') {
         session.directory = session.directory + "/";
     }

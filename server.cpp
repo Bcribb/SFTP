@@ -8,7 +8,6 @@
 #include <string>
 #include <iostream>
 
-// #include "Command.hpp"
 #include "CommandList.hpp"
 
 #define PORT 10000 
@@ -98,7 +97,7 @@ void directory(string inputCommand, string& response) {
         }
 
     // Check at this point whether the user has access
-    } else if (!(session.checkPassword() == loggedIn)) {
+    } else if (false) {//!(session.checkPassword() == loggedIn)) {
         response = "-Please log in first";  
 
     // Type
@@ -155,7 +154,6 @@ void directory(string inputCommand, string& response) {
             RenameCommand command = RenameCommand(commandString, filename);
             command.setTarget(session, response);
         } else {
-            //TODO generic
             session.renamingFile.clear();
             if(session.directory[session.directory.length() - 1] != '/') {
                 session.directory = session.directory + "/";

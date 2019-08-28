@@ -18,7 +18,6 @@ const string CommandList::storeFile = "STOR";
 
 
 bool CommandList::checkUsername(string input) {
-    // TODO make this a generic function
     if(input[4] != ' ') {
         cout << "INVALID ENTRY: Missing space" << endl;
         return false;
