@@ -97,7 +97,7 @@ void directory(string inputCommand, string& response) {
         }
 
     // Check at this point whether the user has access
-    } else if (false) {//!(session.checkPassword() == loggedIn)) {
+    } else if (session.checkPassword() == error) {
         response = "-Please log in first";  
 
     // Type
