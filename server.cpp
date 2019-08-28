@@ -8,7 +8,7 @@
 #include <string>
 #include <iostream>
 
-#include "Command.hpp"
+// #include "Command.hpp"
 #include "CommandList.hpp"
 
 #define PORT 10000 
@@ -283,6 +283,7 @@ int main(int argc, char const *argv[])
         send(new_socket, response.data(), response.size(), 0); 
 
         session = SeshGremlin();
+        readUsers(session.userList);
 
         while(session.open) {
             // Read in the command, print it

@@ -64,7 +64,6 @@ int main(int argc, char const *argv[])
 	string sport;
 	int port = -1;
 	
-
 	string command; 
 	char buffer[1024] = {0}; 
 
@@ -117,7 +116,7 @@ int main(int argc, char const *argv[])
 			send(sock, command.data(), command.size(), 0); 
 
 			if(command == "SEND") {
-				receiveFile(filename, sock, filesize);
+				receiveFile(filename, sock, filesize, false);
 
 			// Store command follow up
 			} else if(command.substr(0, 4) == "STOR") {

@@ -20,6 +20,8 @@ class SeshGremlin {
 
         bool open;
 
+        userDef userList[10];
+
         string username;
         string account;
         string password;
@@ -30,8 +32,6 @@ class SeshGremlin {
         string retrievingFile;
 
         bool transferDone;
-
-        bool hasAccess;
 
         SeshGremlin();
         response checkUsername();

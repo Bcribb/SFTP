@@ -5,16 +5,15 @@ using namespace std;
 /*-------SeshGremlin---------*/
 SeshGremlin::SeshGremlin() {
     open = true;
-    hasAccess = false;
+    type = bin;
     directory = "./server_files";
     return;
 }
 
 response SeshGremlin::checkUsername() {
-    if(username == "root") {
-        hasAccess = true;
+    if(checkLoggedIn(userList, username, account, password)) {
         return loggedIn;
-    } else if(singleArg(username)) {
+    } else if(checkUser(userList, username)) {
         return success;
     } else {
         return error;
@@ -23,35 +22,19 @@ response SeshGremlin::checkUsername() {
 
 // TODO: Implement some different creds
 response SeshGremlin::checkAccount() {
-    if(checkUsername() == loggedIn) {
-        hasAccess = true;
+    if(checkLoggedIn(userList, username, account, password)) {
         return loggedIn;
-    } else if(account == "Blain") {
-        if(password == "Cribb") {
-            hasAccess = true;
-            return loggedIn;
-        } else {
-            hasAccess = false;
-            return success;
-        }
+    } else if(checkAcc(userList, username, account)) {
+        return success;
     } else {
-        hasAccess = false;
         return error;
     }
 }
 
 response SeshGremlin::checkPassword() {
-    if(checkUsername() == loggedIn) {
-        hasAccess = true;
-        return loggedIn;
-    } else if(account.empty() && singleArg(password)) {
-        hasAccess = false;
-        return success;
-    } else if(account == "Blain" && password == "Cribb") {
-        hasAccess = true;
-        return loggedIn;
+    if(checkLoggedIn(userList, username, account, password)) {
+        return loggedIn;  
     } else {
-        hasAccess = false;
         return error;
     }
 }
@@ -288,6 +271,7 @@ void StoreCommand::store(SeshGremlin& session, string& response) {
     switch(type) {
         case NEW:
             if(fileExists(session.directory + filename)) {
+                filename = newFilename(session.directory, filename);
                 response = "+File exists, will create new generation of file";
             } else {
                 response = "+File doesn't exist, will create new file";
@@ -311,7 +295,11 @@ void StoreCommand::store(SeshGremlin& session, string& response) {
 }
 
 void StoreCommand::doTheThing(SeshGremlin& session, int filesize, int socket) {
-    receiveFile(session.directory + filename, socket, filesize);
+    if(type == APP) {
+        receiveFile(session.directory + filename, socket, filesize, true);
+    } else {
+        receiveFile(session.directory + filename, socket, filesize, false);
+    }
 }
 
 /*-----------COUT OVERRIDES FOR CLASSES------------*/
